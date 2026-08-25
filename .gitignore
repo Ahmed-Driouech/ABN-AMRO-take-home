@@ -1,0 +1,19 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.DS_Store
+.env
+
+# Everything under data/ is either a source PDF (large, public, fetched by
+# scripts/fetch_reports.sh) or derived state (parse cache, table rewrites,
+# Chroma, SQLite). None of it belongs in the repository.
+data/*
+!data/.gitkeep
+
+node_modules/
+dist/
+
+# Stray report PDFs at the repo root, superseded by data/reports/.
+/*.pdf

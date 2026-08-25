@@ -1,0 +1,11 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file: .env
+    volumes:
+      # Everything derived lives here: the parse cache, the table rewrites,
+      # Chroma and SQLite. Mounting it is what makes data survive a restart,
+      # and what stops a rebuild from re-paying for parsing.
+      - ./data:/app/data

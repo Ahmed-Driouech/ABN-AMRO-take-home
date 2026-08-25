@@ -1,0 +1,163 @@
+# Retrieval and answer evaluation set.
+#
+# Each entry names the page the answer actually lives on, so retrieval can be
+# scored with recall@k independently of whether generation words the answer
+# well -- a RAG failure is either a retrieval failure or a generation failure,
+# and they have different fixes.
+#
+# `contains` is a string that must appear on `pages`. It is asserted before
+# scoring, so a question can never quietly point at the wrong page.
+#
+# Questions with `answerable: false` have no support in the corpus. The system
+# must say so rather than construct something plausible -- abstention is the
+# behaviour a bank cares about most.
+
+- id: shell-cca-capex
+  question: How much did Shell spend on climate change adaptation in 2024?
+  company: Shell
+  pages: [390]
+  contains: "Climate change adaptation (CCA)"
+
+- id: shell-goodwill-total
+  question: What was Shell's total goodwill at December 31, 2024?
+  company: Shell
+  pages: [258]
+  contains: "16.0"
+  # The same figure is printed twice: 16.0 in $ billion on the segment summary,
+  # and 16,032 in $ million in the goodwill note. Either is a correct answer.
+  expected_answer: ["16.0", "16,032"]
+
+- id: shell-ppe-integrated-gas
+  question: What was the carrying value of Shell's property, plant and equipment for Integrated Gas in 2024?
+  company: Shell
+  pages: [258]
+  contains: "60.0"
+  expected_answer: "60.0"
+
+- id: shell-total-assets-by-segment
+  question: What was the total carrying value of Shell's assets by segment in 2024?
+  company: Shell
+  pages: [258]
+  contains: "234.1"
+  expected_answer: "234.1"
+
+- id: shell-scope12-target
+  question: What is Shell's target for reducing Scope 1 and 2 emissions by 2030?
+  company: Shell
+  pages: [258]
+  contains: "2016"
+
+- id: asml-personnel-expenses
+  question: What were ASML's total personnel expenses in 2024?
+  company: ASML
+  pages: [354]
+  contains: "6,037.4"
+  expected_answer: "6,037.4"
+
+- id: asml-wages-salaries
+  question: How much did ASML pay in wages and salaries in 2024?
+  company: ASML
+  pages: [354]
+  contains: "5,001.2"
+  expected_answer: "5,001.2"
+
+- id: asml-social-security
+  question: What were ASML's social security expenses in 2024?
+  company: ASML
+  pages: [354]
+  contains: "468.4"
+  expected_answer: "468.4"
+
+- id: asml-fte-average
+  question: What was the average number of payroll employees in FTE at ASML?
+  company: ASML
+  pages: [354]
+  contains: "FTE"
+
+- id: abn-fvoci
+  question: What were ABN AMRO Bank N.V.'s financial investments FVOCI at 31 December 2024?
+  company: ABN AMRO
+  pages: [467]
+  contains: "3,170"
+  expected_answer: "3,170"
+
+- id: abn-guarantees
+  question: Why did ABN AMRO's guarantees granted increase in 2024?
+  company: ABN AMRO
+  pages: [467]
+  contains: "guarantees granted"
+
+- id: abn-headcount
+  question: How many employees did ABN AMRO have in 2024?
+  company: ABN AMRO
+  pages: [304]
+  contains: "employees"
+
+- id: cmcom-employees
+  question: How many employees did CM.com have on average in 2024?
+  company: CM.com
+  pages: [178]
+  contains: "employees"
+
+- id: heineken-headcount
+  question: What was Heineken's employee headcount in 2024?
+  company: Heineken
+  pages: [219]
+  contains: "headcount"
+
+# --- unanswerable: the system must abstain -------------------------------
+- id: unanswerable-old-year
+  question: What was Shell's revenue in 1985?
+  company: Shell
+  answerable: false
+
+- id: unanswerable-other-company
+  question: How many employees does Tesla have?
+  company: null
+  answerable: false
+
+- id: unanswerable-future
+  question: What dividend will ASML pay in 2030?
+  company: ASML
+  answerable: false
+
+# --- paraphrased: the answer page does not contain the question's wording ---
+# These exist to test whether dense retrieval earns its place. A set made only
+# of "find this exact figure" questions is inherently BM25-friendly and would
+# argue for dropping the dense half on biased evidence.
+
+- id: paraphrase-shell-extreme-weather
+  question: How could extreme weather and rising sea levels affect Shell's operations?
+  company: Shell
+  pages: [85]
+  contains: "climate"
+
+- id: paraphrase-asml-workforce-cost
+  question: How much does ASML spend on its workforce each year?
+  company: ASML
+  pages: [354]
+  contains: "Personnel expenses"
+
+- id: paraphrase-shell-segment-assets
+  question: What is Shell's Integrated Gas division worth on the balance sheet?
+  company: Shell
+  pages: [258]
+  contains: "Integrated Gas"
+
+- id: paraphrase-abn-offbalance
+  question: Why did ABN AMRO's off-balance-sheet exposures grow last year?
+  company: ABN AMRO
+  pages: [467]
+  contains: "guarantees granted"
+
+- id: paraphrase-cmcom-workforce
+  question: How big is CM.com's workforce?
+  company: CM.com
+  pages: [178]
+  contains: "employees"
+
+- id: paraphrase-shell-carbon-cost
+  question: How does Shell account for the future cost of carbon in its planning?
+  company: Shell
+  pages: [258]
+  contains: "carbon"

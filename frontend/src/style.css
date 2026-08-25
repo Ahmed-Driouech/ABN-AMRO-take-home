@@ -1,0 +1,75 @@
+/* Quantitative Logic — design tokens.
+   Light mode only: the workflow is document-centric financial analysis, and
+   the system commits to a single high-clarity surface. */
+:root {
+  --surface: #f8f9ff;
+  --surface-dim: #cbdbf5;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #eff4ff;
+  --surface-container: #e5eeff;
+  --surface-container-high: #dce9ff;
+  --surface-container-highest: #d3e4fe;
+
+  --on-surface: #0b1c30;
+  --on-surface-variant: #45464d;
+  --outline: #76777d;
+  --outline-variant: #c6c6cd;
+
+  --primary: #131b2e;              /* deep navy */
+  --on-primary: #ffffff;
+  --secondary: #006c49;            /* emerald — positive / primary action */
+  --on-secondary: #ffffff;
+  --secondary-container: #6cf8bb;
+  --on-secondary-container: #00714d;
+
+  /* Sulfur yellow is reserved for RAG evidence: citations and source links.
+     Nothing else uses it, so extracted evidence is impossible to miss. */
+  --tertiary-fixed: #e7eb15;
+  --tertiary-fixed-dim: #cace00;
+  --on-tertiary-fixed: #1c1d00;
+  --on-tertiary-fixed-variant: #484a00;
+
+  --error: #ba1a1a;
+  --error-container: #ffdad6;
+  --on-error-container: #93000a;
+
+  --radius: 0.25rem;
+  --radius-lg: 0.5rem;
+  --gutter: 24px;
+  --stack-sm: 8px;
+  --stack-md: 16px;
+  --stack-lg: 32px;
+
+  font-family: Inter, ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--surface);
+  color: var(--on-surface);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+
+/* Numerical data and citations: monospace keeps digits aligned column to
+   column, which is what makes a wide financial table scannable. */
+.mono {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.label-caps {
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
