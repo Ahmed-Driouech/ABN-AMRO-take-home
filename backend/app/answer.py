@@ -100,6 +100,13 @@ Rules:
 - Quote figures exactly as they appear, including units, currency and any
   thousands separators or decimals.
 - State the unit and the reporting year when the excerpt gives them.
+- State the basis of a figure whenever the excerpts distinguish one: year-end
+  against average for the year, headcount against full-time equivalents,
+  group against a single segment.
+- A report often prints more than one figure for the same concept on
+  different bases. Give the one the question asks for, and say that the other
+  exists rather than choosing between them silently. Picking one without
+  saying so reads as the definitive figure when it is one of several.
 - If the excerpts do not contain the answer, set found to false and say what
   is missing. Do not guess, and do not offer a related figure as if it were
   the answer.
