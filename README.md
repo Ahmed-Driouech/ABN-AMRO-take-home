@@ -14,7 +14,15 @@ make extract              # pre-extract FTE + sustainability goals
 make serve                # http://localhost:8000
 ```
 
-Or `docker compose up --build`, which serves the same thing on port 8000.
+Or in a container, which serves the same thing on port 8000:
+
+```bash
+docker compose up --build      # Compose V2 plugin
+docker-compose up --build      # standalone binary (Docker Desktop installs this one)
+```
+
+`data/` is mounted as a volume, so the parse cache, Chroma index and SQLite
+survive a rebuild — and the metered parsing step is never paid twice.
 
 ---
 
