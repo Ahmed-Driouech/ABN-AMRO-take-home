@@ -1,36 +1,46 @@
 /* Quantitative Logic — design tokens.
    Light mode only: the workflow is document-centric financial analysis, and
    the system commits to a single high-clarity surface. */
+/* Quantitative Logic — design tokens, expressed in ABN AMRO's brand palette.
+   Colours sampled from abnamro.nl: #004c4c petrol is their dominant surface,
+   #00716b the lighter teal, #ffd200 the accent used on calls to action.
+
+   The design system reserves the tertiary exclusively for RAG evidence, and
+   ABN's yellow is already their attention colour — so citations inherit the
+   one hue the brand uses to say "look here".
+
+   Light mode only: the workflow is document-centric financial analysis and
+   the system commits to a single high-clarity surface. */
 :root {
-  --surface: #f8f9ff;
-  --surface-dim: #cbdbf5;
+  --surface: #ffffff;
   --surface-container-lowest: #ffffff;
-  --surface-container-low: #eff4ff;
-  --surface-container: #e5eeff;
-  --surface-container-high: #dce9ff;
-  --surface-container-highest: #d3e4fe;
+  --surface-container-low: #f7f9f9;
+  --surface-container: #eef2f2;
+  --surface-container-high: #e4eaea;
+  --surface-container-highest: #dbe3e3;
 
-  --on-surface: #0b1c30;
-  --on-surface-variant: #45464d;
-  --outline: #76777d;
-  --outline-variant: #c6c6cd;
+  --on-surface: #1e1e1e;
+  --on-surface-variant: #616161;
+  --outline: #7d7d7d;
+  --outline-variant: #dedede;
 
-  --primary: #131b2e;              /* deep navy */
+  --primary: #004c4c;              /* ABN petrol — headers, active nav */
   --on-primary: #ffffff;
-  --secondary: #006c49;            /* emerald — positive / primary action */
+  --primary-dim: #003737;
+  --secondary: #00716b;            /* ABN teal — primary action, positive */
   --on-secondary: #ffffff;
-  --secondary-container: #6cf8bb;
-  --on-secondary-container: #00714d;
+  --secondary-container: #e4f0ef;
+  --on-secondary-container: #00514d;
 
-  /* Sulfur yellow is reserved for RAG evidence: citations and source links.
-     Nothing else uses it, so extracted evidence is impossible to miss. */
-  --tertiary-fixed: #e7eb15;
-  --tertiary-fixed-dim: #cace00;
-  --on-tertiary-fixed: #1c1d00;
-  --on-tertiary-fixed-variant: #484a00;
+  /* Reserved for RAG evidence: citation chips and the accent on generated
+     answers. Nothing else uses it, so extracted evidence cannot be missed. */
+  --tertiary-fixed: #ffd200;
+  --tertiary-fixed-dim: #e0b900;
+  --on-tertiary-fixed: #1e1e1e;
+  --on-tertiary-fixed-variant: #4a3d00;
 
   --error: #ba1a1a;
-  --error-container: #ffdad6;
+  --error-container: #fdecea;
   --on-error-container: #93000a;
 
   --radius: 0.25rem;

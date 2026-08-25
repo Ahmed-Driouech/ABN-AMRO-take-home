@@ -146,6 +146,11 @@ Note also what this exposes about the audit: `1,849` **is** on the page, so a
 presence check cannot detect a *placement* error. The audit measures
 transcription, not column alignment.
 
+That answer is also **not deterministic**: on some runs the system abstains
+instead, because the table falls outside the top 10 and nothing else supports
+a figure. Abstaining is the better of the two outcomes, but the inconsistency
+is the same root cause.
+
 Other limitations:
 
 - **Retrieval is 85% recall@10**, so roughly one question in seven cannot be
@@ -157,6 +162,9 @@ Other limitations:
 - **20 answerable questions is a small set.** Directionally sound, not tight.
 - **Single-turn is well tested; multi-turn is not.** The planner rewrites
   follow-ups into standalone questions, but no eval covers it.
+- **Conversation history is client-side** (`localStorage`), so it survives a
+  reload but is per-browser. The persistence requirement concerns the ingested
+  reports, index and extracted datapoints, which are all server-side.
 
 ## Assumptions
 

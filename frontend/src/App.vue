@@ -1,10 +1,26 @@
 <script setup>
-import { ref, onMounted, computed, nextTick } from 'vue'
+import { ref, onMounted, computed, nextTick, watch } from 'vue'
+
+// The conversation is client-side UI state, so it lives in the browser. The
+// reports, index and extracted datapoints are the data that must survive a
+// restart, and those are on the server.
+const STORAGE_KEY = 'ari.conversation.v1'
+
+function restore() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+    // Drop any turn that was still in flight when the page closed, so a
+    // reload never shows a question stuck on "Searching…".
+    return saved.filter((t) => t.answer)
+  } catch {
+    return []
+  }
+}
 
 const tab = ref('chat')
 const question = ref('')
 const busy = ref(false)
-const turns = ref([])
+const turns = ref(restore())
 const datapoints = ref([])
 const companies = ref([])
 const filter = ref('')
@@ -26,7 +42,10 @@ async function ask() {
   question.value = ''
   busy.value = true
   const turn = { question: q, answer: '', citations: [], found: null }
-  turns.value.push(turn)
+  // Replace the array entry rather than mutating the object in place: the
+  // local reference is the raw object, not the reactive proxy, so assigning
+  // to its fields updates nothing that Vue is watching.
+  const index = turns.value.push(turn) - 1
   await nextTick()
   thread.value?.scrollTo({ top: thread.value.scrollHeight, behavior: 'smooth' })
   try {
@@ -36,11 +55,11 @@ async function ask() {
       body: JSON.stringify({ question: q, history: history.value }),
     })
     if (!res.ok) throw new Error(await res.text())
-    Object.assign(turn, await res.json())
-    if (turn.citations?.length) source.value = turn.citations[0]
+    const data = await res.json()
+    turns.value[index] = { ...turn, ...data }
+    if (data.citations?.length) source.value = data.citations[0]
   } catch (err) {
-    turn.answer = `Request failed: ${err.message}`
-    turn.found = false
+    turns.value[index] = { ...turn, answer: `Request failed: ${err.message}`, found: false }
   } finally {
     busy.value = false
     await nextTick()
@@ -50,7 +69,21 @@ async function ask() {
 
 const pages = (c) => (c.page === c.page_end ? `p. ${c.page}` : `pp. ${c.page}–${c.page_end}`)
 
+function clearConversation() {
+  turns.value = []
+  source.value = null
+  localStorage.removeItem(STORAGE_KEY)
+}
+
+watch(
+  turns,
+  (value) => localStorage.setItem(STORAGE_KEY, JSON.stringify(value.filter((t) => t.answer))),
+  { deep: true },
+)
+
 onMounted(async () => {
+  await nextTick()
+  thread.value?.scrollTo({ top: thread.value.scrollHeight })
   const [health, points] = await Promise.all([
     fetch('/api/health').then((r) => r.json()),
     fetch('/api/datapoints').then((r) => r.json()),
@@ -91,8 +124,13 @@ onMounted(async () => {
     <main>
       <template v-if="tab === 'chat'">
         <header class="bar">
-          <h2>Analysis</h2>
-          <p class="muted">Answers are grounded in the indexed reports and cite their source page.</p>
+          <div>
+            <h2>Analysis</h2>
+            <p class="muted">
+              Answers are grounded in the indexed reports and cite their source page.
+            </p>
+          </div>
+          <button v-if="turns.length" class="ghost" @click="clearConversation">Clear</button>
         </header>
 
         <div class="thread" ref="thread">
@@ -247,8 +285,8 @@ onMounted(async () => {
   background: var(--primary); position: relative;
 }
 .mark::after {
-  content: ''; position: absolute; inset: 9px 9px auto auto;
-  width: 10px; height: 10px; background: var(--tertiary-fixed); border-radius: 1px;
+  content: ''; position: absolute; inset: 8px 8px auto auto;
+  width: 11px; height: 11px; background: var(--tertiary-fixed); border-radius: 1px;
 }
 .brand h1 { font-size: 15px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
 .sub { color: var(--on-surface-variant); margin: 6px 0 0; }
@@ -273,10 +311,23 @@ nav button.on { background: var(--primary); color: var(--on-primary); }
 /* ---------- main ---------- */
 main { display: flex; flex-direction: column; min-width: 0; }
 .bar {
-  padding: var(--gutter) var(--margin, 40px);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--stack-md);
+  padding: var(--gutter) 40px;
   border-bottom: 1px solid var(--outline-variant);
   background: var(--surface-container-lowest);
 }
+.ghost {
+  margin-left: auto;
+  flex: none;
+  border: 1px solid var(--outline-variant);
+  background: transparent;
+  color: var(--on-surface-variant);
+  border-radius: var(--radius);
+  padding: 6px 12px;
+}
+.ghost:hover { background: var(--surface-container); border-color: var(--outline); }
 .bar h2 { font-size: 20px; font-weight: 500; margin: 0 0 4px; }
 .bar p { margin: 0; font-size: 13px; }
 .muted { color: var(--on-surface-variant); }
@@ -314,11 +365,12 @@ main { display: flex; flex-direction: column; min-width: 0; }
   margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--outline-variant);
 }
 .chip {
-  border: 1px solid var(--tertiary-fixed-dim); background: color-mix(in srgb, var(--tertiary-fixed) 22%, white);
-  color: var(--on-tertiary-fixed-variant); border-radius: var(--radius);
+  border: 1px solid var(--tertiary-fixed-dim);
+  background: color-mix(in srgb, var(--tertiary-fixed) 30%, white);
+  color: var(--on-tertiary-fixed); border-radius: var(--radius);
   padding: 3px 8px; font-size: 12px; font-weight: 500;
 }
-.chip:hover, .chip.active { background: var(--tertiary-fixed); color: var(--on-tertiary-fixed); }
+.chip:hover, .chip.active { background: var(--tertiary-fixed); }
 
 form { display: flex; gap: var(--stack-sm); padding: var(--stack-md) 40px var(--gutter); border-top: 1px solid var(--outline-variant); }
 form input {
@@ -328,8 +380,9 @@ form input {
 form input:focus { outline: 2px solid var(--tertiary-fixed-dim); outline-offset: 1px; border-color: var(--outline); }
 form button {
   padding: 12px 22px; border: 0; border-radius: var(--radius-lg);
-  background: var(--secondary); color: var(--on-secondary); font-weight: 500;
+  background: var(--primary); color: var(--on-primary); font-weight: 500;
 }
+form button:hover:not(:disabled) { background: var(--primary-dim); }
 form button:disabled { opacity: 0.45; }
 
 /* ---------- extracted data ---------- */
